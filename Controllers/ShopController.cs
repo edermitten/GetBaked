@@ -8,5 +8,13 @@ namespace GetBaked.Controllers
         {
             return View();
         }
+
+        public IActionResult ByCategory(String name)
+        {
+            //store category name
+            ViewData["Category"] = name;
+            return View();
+        }
+
     }
 }
