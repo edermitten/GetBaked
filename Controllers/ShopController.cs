@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using GetBaked.Models;
+using Microsoft.AspNetCore.Mvc;
 
 namespace GetBaked.Controllers
 {
@@ -13,7 +14,20 @@ namespace GetBaked.Controllers
         {
             //store category name
             ViewData["Category"] = name;
-            return View();
+
+            //list of products
+            var products = new List<Product>();
+
+            //loop for products
+            for (int i = 1;i <=5; i++)
+            {
+                products.Add(new Product { ProductId = i, Name = "Product" + i.ToString(), Price = 8 });
+            }
+
+            //send the products
+            //return View();
+            return View(products);
+
         }
 
     }
