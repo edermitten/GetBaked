@@ -1,9 +1,13 @@
-﻿namespace GetBaked.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace GetBaked.Models
 {
     public class Product
     {
         public int ProductId { get; set; }
         public string Name { get; set; }
+
+        [DisplayFormat(DataFormatString = "{0:c}")]
         public decimal Price { get; set; }
 
         //parent reference to category 

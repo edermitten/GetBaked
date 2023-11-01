@@ -14,6 +14,22 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.Requ
     .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddControllersWithViews();
 
+//enable google auth at startup
+var configuration = builder.Configuration;
+builder.Services.AddAuthentication()
+    .AddGoogle(options =>
+    {
+        options.ClientId = configuration["Authentication:Google:ClientId"];
+        options.ClientSecret = configuration["Authentication:Google:ClientSecret"];
+    });
+
+builder.Services.AddAuthentication()
+    .AddGitHub(options =>
+    {
+        options.ClientId = configuration["Authentication:GitHub:ClientId"];
+        options.ClientSecret = configuration["Authentication:GitHub:ClientSecret"];
+    });
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

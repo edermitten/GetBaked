@@ -22,7 +22,8 @@ namespace GetBaked.Controllers
         // GET: Products
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.Products.Include(p => p.Category);
+            //var applicationDbContext = _context.Products.Include(p => p.Category);
+            var applicationDbContext = _context.Products.Include(p => p.Category).OrderBy(p=>p.Name);
             return View(await applicationDbContext.ToListAsync());
         }
 
@@ -48,7 +49,8 @@ namespace GetBaked.Controllers
         // GET: Products/Create
         public IActionResult Create()
         {
-            ViewData["CategoryId"] = new SelectList(_context.Categories, "CategoryId", "CategoryId");
+            ViewData["CategoryId"] = new SelectList(_context.Categories.OrderBy
+                (c=>c.Name), "CategoryId", "Name");
             return View();
         }
 
