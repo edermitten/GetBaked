@@ -9,7 +9,7 @@
 <p>
     <a asp-action="Create">Create New</a>
 </p>
-<table class="table">
+<table class="table table-striped table-hover sortable">
     <thead>
         <tr>
             <th>
@@ -18,7 +18,7 @@
             <th>
                 @Html.DisplayNameFor(model => model.Price)
             </th>
-            <th>
+            <th class="sorttable_nosort">
                 @Html.DisplayNameFor(model => model.Photo)
             </th>
             <th>
@@ -38,7 +38,10 @@
             </td>
             
             <td>
-                @Html.DisplayFor(modelItem => item.Photo)
+                @if (item.Photo != null)
+                {
+                    <img src="~/img/product-images/@item.Photo" alt="Product Photo" class="thumb" />
+                }
             </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Category.Name)

@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using GetBaked.Data;
 using GetBaked.Models;
+using Microsoft.AspNetCore.Identity;
 
 namespace GetBaked.Controllers
 {
@@ -59,10 +60,16 @@ namespace GetBaked.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ProductId,Name,Price,CategoryId,Photo")] Product product)
+        public async Task<IActionResult> Create([Bind("ProductId,Name,Price,CategoryId")] Product product, IFormFile? Photo)
         {
             if (ModelState.IsValid)
             {
+                //check for a photo upload
+                if(Photo != null)
+                {
+                    product.Photo = UploadPhoto(Photo);
+                }
+
                 _context.Add(product);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -84,7 +91,7 @@ namespace GetBaked.Controllers
             {
                 return NotFound();
             }
-            ViewData["CategoryId"] = new SelectList(_context.Categories, "CategoryId", "CategoryId", product.CategoryId);
+            ViewData["CategoryId"] = new SelectList(_context.Categories.OrderBy(c=>c.Name), "CategoryId", "Name", product.CategoryId);
             return View(product);
         }
 
@@ -93,7 +100,7 @@ namespace GetBaked.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ProductId,Name,Price,CategoryId,Photo")] Product product)
+        public async Task<IActionResult> Edit(int id, [Bind("ProductId,Name,Price,CategoryId,Photo")] Product product, IFormFile? Photo, string? ExistingPhoto)
         {
             if (id != product.ProductId)
             {
@@ -104,6 +111,18 @@ namespace GetBaked.Controllers
             {
                 try
                 {
+                    //check for a photo upload
+                    if (Photo != null)
+                    {
+                        product.Photo = UploadPhoto(Photo);
+                    }
+                    else
+                    {
+                        //keep existing photo
+                        product.Photo = ExistingPhoto;
+
+                    }
+
                     _context.Update(product);
                     await _context.SaveChangesAsync();
                 }
@@ -165,6 +184,29 @@ namespace GetBaked.Controllers
         private bool ProductExists(int id)
         {
           return (_context.Products?.Any(e => e.ProductId == id)).GetValueOrDefault();
+        }
+
+        //Upload Photo
+        private string UploadPhoto(IFormFile photo)
+        {
+            //get file locattion
+            var tempPath = Path.GetTempFileName();
+
+            //create a unique name using GUI class
+            var fileName = Guid.NewGuid().ToString() + "-" + photo.FileName;
+
+            //set destination folder dinamically so it works on any server
+            var uploadPath = System.IO.Directory.GetCurrentDirectory() + "\\wwwroot\\img\\product-images\\" + fileName;
+
+            //copy file to destination
+            using (var stream = new FileStream(uploadPath, FileMode.Create))
+            {
+                photo.CopyTo(stream);
+            }
+
+            //send back the unique file name
+            return fileName;
+
         }
     }
 }

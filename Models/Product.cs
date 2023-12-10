@@ -13,7 +13,7 @@ namespace GetBaked.Models
         //parent reference to category 
         public int CategoryId { get; set; }
         public Category? Category { get; set; }
-        public string Photo { get; set; }
+        public string? Photo { get; set; }
 
         //child references
         public List<CartItem>? CartItems { get; set; }
