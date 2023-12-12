@@ -1,6 +1,7 @@
 ﻿using GetBaked.Data;
 using GetBaked.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace GetBaked.Controllers
 {
@@ -45,6 +46,8 @@ namespace GetBaked.Controllers
             return View(products);
 
         }
+
+        //Post
         [HttpPost]
         public IActionResult AddToCart(int ProductId, int Quantity)
         {
@@ -91,6 +94,38 @@ namespace GetBaked.Controllers
 
             //pass back the session
             return HttpContext.Session.GetString("CustomerId");
+        }
+
+        //GET: /Shop/Cart
+        public IActionResult Cart()
+        {
+            //identify wuch cart to fetch & display
+            var customerId = GetCustomerId();
+
+            //query the db for the cart items; include or Join parent Product
+            var cartItems = _context.CartItems
+                .Include(c => c.Product)
+                .Where(c => c.CustomerId == customerId).ToList();
+
+            //count total of items in cart
+            var itemCount = (from c in cartItems 
+                             select c.Quantity).Sum();
+
+            HttpContext.Session.SetInt32("ItemCount", itemCount);
+
+            return View(cartItems);  
+        }
+
+        //GET /Shop/removefromcart
+        public IActionResult RemoveFromCart(int id)
+        {
+            var cartItem = _context.CartItems.Find(id);
+
+            _context.CartItems.Remove(cartItem);
+            _context.SaveChanges();
+
+            return RedirectToAction("Cart");
+
         }
 
     }
