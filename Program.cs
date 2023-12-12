@@ -31,6 +31,9 @@ builder.Services.AddAuthentication()
         options.ClientSecret = configuration["Authentication:GitHub:ClientSecret"];
     });
 
+//enable session
+builder.Services.AddSession();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -56,5 +59,8 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 app.MapRazorPages();
+
+//end session
+app.UseSession();
 
 app.Run();
