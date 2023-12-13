@@ -34,12 +34,18 @@ builder.Services.AddAuthentication()
 //enable session
 builder.Services.AddSession();
 
+//enable api doc generation
+builder.Services.AddSwaggerGen();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseMigrationsEndPoint();
+    //generate updated swagger apidocs
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
 else
 {
